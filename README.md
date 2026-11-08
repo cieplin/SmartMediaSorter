@@ -25,8 +25,9 @@ pwsh -File .\Remove-DuplicateFolders.ps1 -WhatIf
 - **`Find-MediaDuplicates.ps1`** – Script for duplicate detection (first by normalized base name and identical extension, then by byte length and `SHA-256` checksum) and moving confirmed duplicates into a local `_Duplicates` subfolder in the same directory.
 - **`Remove-DuplicateFolders.ps1`** – Script for recursively removing `_Duplicates` folders to the Windows Recycle Bin (local drives) or to a dated `_DuplicatesTrash` directory (network/removable drives).
 
-### Automatic Recycle Bin & System Folder Exclusion
+### Automatic Recycle Bin, Trash & Dot-Directory Exclusion
 All scripts (`SmartMediaSorter.ps1`, `Find-MediaDuplicates.ps1`, `Remove-DuplicateFolders.ps1`) leverage `SmartMediaCommon.ps1` to automatically ignore:
+- **Dot-directories (starting with `.`):** `.git`, `.thumbnails`, `.cache`, `.sync`, `.idea`, `.vscode`, etc.
 - **Windows Recycle Bin:** `$RECYCLE.BIN`, `RECYCLER`, `RECYCLED`
 - **Network / NAS Recycle Bins:** `#recycle` (Synology DSM), `@Recycle` (QNAP QTS)
 - **Unix / macOS Trash:** `.Trash`, `.Trash-*`, `.Trashes`

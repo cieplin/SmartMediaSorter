@@ -486,7 +486,7 @@ $dirStack.Push([System.IO.DirectoryInfo]::new($resolvedRoot))
 
 while ($dirStack.Count -gt 0) {
     $currDir = $dirStack.Pop()
-    if (Test-IsRecycleBinOrTrashDirectoryName -DirectoryName $currDir.Name) {
+    if (Test-IsIgnoredDirectoryName -DirectoryName $currDir.Name) {
         continue
     }
     $scanDirectories.Add((Get-NormalizedPath -Path $currDir.FullName))
@@ -503,7 +503,7 @@ while ($dirStack.Count -gt 0) {
         for ($idx = $subDirs.Length - 1; $idx -ge 0; $idx--) {
             $sub = $subDirs[$idx]
             if ($sub.Name.Equals($DuplicateFolderName, [System.StringComparison]::OrdinalIgnoreCase) -or
-                (Test-IsRecycleBinOrTrashDirectoryName -DirectoryName $sub.Name)) {
+                (Test-IsIgnoredDirectoryName -DirectoryName $sub.Name)) {
                 continue
             }
             if ([bool]($sub.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {

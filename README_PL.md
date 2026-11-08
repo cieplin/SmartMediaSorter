@@ -20,8 +20,9 @@ Skrypty uruchamiaj w `pwsh`, np. `pwsh -File .\Remove-DuplicateFolders.ps1 -What
 - **`Find-MediaDuplicates.ps1`** – skrypt do wykrywania duplikatów (najpierw po znormalizowanej nazwie pliku i tym samym rozszerzeniu, a następnie po rozmiarze i sumie kontrolnej `SHA-256`) oraz przenoszenia wykrytych duplikatów do lokalnego podfolderu `_Duplicates` w tym samym katalogu.
 - **`Remove-DuplicateFolders.ps1`** – skrypt rekurencyjnie usuwający foldery `_Duplicates` do Kosza Windows (dyski lokalne) lub do datowanego katalogu `_DuplicatesTrash` (dyski sieciowe/wymienne).
 
-### Automatyczne ignorowanie Kosza i folderów systemowych
+### Automatyczne ignorowanie Kosza, folderów systemowych i katalogów zaczynających się od kropki
 Wszystkie skrypty (`SmartMediaSorter.ps1`, `Find-MediaDuplicates.ps1`, `Remove-DuplicateFolders.ps1`) w oparciu o wspólny moduł `SmartMediaCommon.ps1` automatycznie ignorują:
+- **Katalogi ukryte/konfiguracyjne (zaczynające się od `.`):** `.git`, `.thumbnails`, `.cache`, `.sync`, `.idea`, `.vscode` itp.
 - **Kosz Windows:** `$RECYCLE.BIN`, `RECYCLER`, `RECYCLED`
 - **Kosz sieciowy / NAS:** `#recycle` (Synology DSM), `@Recycle` (QNAP QTS)
 - **Kosz uniksowy / macOS:** `.Trash`, `.Trash-*`, `.Trashes`

@@ -91,6 +91,31 @@ function Test-IsRecycleBinOrTrashDirectoryName {
     return $false
 }
 
+function Test-IsIgnoredDirectoryName {
+    <#
+    .SYNOPSIS
+        Checks if a directory should be skipped during recursive traversal.
+        Ignored directories include all directories starting with '.', Windows Recycle Bin,
+        NAS trash bins, Linux/macOS trash, project trash (_DuplicatesTrash), and System Volume Information.
+    #>
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$DirectoryName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($DirectoryName)) {
+        return $false
+    }
+
+    $trimmed = $DirectoryName.Trim()
+    if ($trimmed.StartsWith('.')) {
+        return $true
+    }
+
+    return (Test-IsRecycleBinOrTrashDirectoryName -DirectoryName $trimmed)
+}
+
 function Test-IsRecycleBinOrTrashPath {
     <#
     .SYNOPSIS

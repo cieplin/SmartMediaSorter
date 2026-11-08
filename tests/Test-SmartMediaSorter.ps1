@@ -513,39 +513,53 @@ try {
     $tbDest = Join-Path -Path $tbRoot -ChildPath "Dest"
     $tbRecycleBin = Join-Path -Path $tbSource -ChildPath '$RECYCLE.BIN'
     $tbNasRecycle = Join-Path -Path $tbSource -ChildPath '#recycle'
+    $tbDotFolder = Join-Path -Path $tbSource -ChildPath '.thumbnails'
+    $tbGitFolder = Join-Path -Path $tbSource -ChildPath '.git'
     $tbNormalAlbum = Join-Path -Path $tbSource -ChildPath "NormalAlbum"
 
     New-Item -Path $tbRecycleBin -ItemType Directory -Force | Out-Null
     New-Item -Path $tbNasRecycle -ItemType Directory -Force | Out-Null
+    New-Item -Path $tbDotFolder -ItemType Directory -Force | Out-Null
+    New-Item -Path $tbGitFolder -ItemType Directory -Force | Out-Null
     New-Item -Path $tbNormalAlbum -ItemType Directory -Force | Out-Null
     New-Item -Path $tbDest -ItemType Directory -Force | Out-Null
 
     $normalFile = Join-Path -Path $tbNormalAlbum -ChildPath "VALID_PHOTO.jpg"
     $deletedFile1 = Join-Path -Path $tbRecycleBin -ChildPath "DELETED_PHOTO_1.jpg"
     $deletedFile2 = Join-Path -Path $tbNasRecycle -ChildPath "DELETED_PHOTO_2.jpg"
+    $dotFile = Join-Path -Path $tbDotFolder -ChildPath "DOT_THUMBNAIL.jpg"
+    $gitFile = Join-Path -Path $tbGitFolder -ChildPath "GIT_BLOB.jpg"
 
     New-SampleJpeg -FilePath $normalFile -Red 10 -Green 20 -Blue 30
     New-SampleJpeg -FilePath $deletedFile1 -Red 40 -Green 50 -Blue 60
     New-SampleJpeg -FilePath $deletedFile2 -Red 70 -Green 80 -Blue 90
+    New-SampleJpeg -FilePath $dotFile -Red 100 -Green 110 -Blue 120
+    New-SampleJpeg -FilePath $gitFile -Red 130 -Green 140 -Blue 150
 
-    # Test 11a: SmartMediaSorter ignores $RECYCLE.BIN and #recycle
+    # Test 11a: SmartMediaSorter ignores $RECYCLE.BIN, #recycle, and dot directories (.git, .thumbnails)
     $sortResult = & $sorterScript -SourcePath $tbSource -DestinationPath $tbDest -CopyOnly -LogPath $logFile -PassThru
-    Assert-True ($sortResult.TotalScanned -eq 1) "SmartMediaSorter scanned only 1 valid file (ignored files in `$RECYCLE.BIN and #recycle)"
+    Assert-True ($sortResult.TotalScanned -eq 1) "SmartMediaSorter scanned only 1 valid file (ignored files in `$RECYCLE.BIN, #recycle, and dot-directories)"
     Assert-True ($sortResult.Copied -eq 1) "SmartMediaSorter copied only the valid photo"
     Assert-True (Test-Path -LiteralPath $deletedFile1) "File in `$RECYCLE.BIN was untouched"
     Assert-True (Test-Path -LiteralPath $deletedFile2) "File in #recycle was untouched"
+    Assert-True (Test-Path -LiteralPath $dotFile) "File in .thumbnails was untouched"
+    Assert-True (Test-Path -LiteralPath $gitFile) "File in .git was untouched"
 
-    # Test 11b: Find-MediaDuplicates ignores $RECYCLE.BIN and #recycle
+    # Test 11b: Find-MediaDuplicates ignores $RECYCLE.BIN, #recycle, and dot directories
     $dupResult = & $dupFinderScript -Path $tbSource -LogPath $logFile -PassThru
-    Assert-True ($dupResult.TotalScanned -eq 1) "Find-MediaDuplicates scanned only 1 valid file (ignored `$RECYCLE.BIN and #recycle)"
+    Assert-True ($dupResult.TotalScanned -eq 1) "Find-MediaDuplicates scanned only 1 valid file (ignored `$RECYCLE.BIN, #recycle, and dot-directories)"
 
-    # Test 11c: Remove-DuplicateFolders ignores $RECYCLE.BIN and #recycle
+    # Test 11c: Remove-DuplicateFolders ignores $RECYCLE.BIN, #recycle, and dot directories
     $trashDupFolder = Join-Path -Path $tbRecycleBin -ChildPath "_Duplicates"
+    $dotDupFolder = Join-Path -Path $tbDotFolder -ChildPath "_Duplicates"
     New-Item -Path $trashDupFolder -ItemType Directory -Force | Out-Null
+    New-Item -Path $dotDupFolder -ItemType Directory -Force | Out-Null
     [System.IO.File]::WriteAllText((Join-Path -Path $trashDupFolder -ChildPath "SmartMediaSorter_dummy.jpg"), "trash dummy")
+    [System.IO.File]::WriteAllText((Join-Path -Path $dotDupFolder -ChildPath "SmartMediaSorter_dummy.jpg"), "dot dummy")
     $rmTrashRun = & $removerScript -Path $tbSource -Mode TrashFolder -TrashPath (Join-Path -Path $tbRoot -ChildPath "_DuplicatesTrash") -LogPath $logFile -Force -PassThru
-    Assert-True ($rmTrashRun.FoldersFound -eq 0) "Remove-DuplicateFolders did not search inside `$RECYCLE.BIN"
+    Assert-True ($rmTrashRun.FoldersFound -eq 0) "Remove-DuplicateFolders did not search inside `$RECYCLE.BIN or dot directories"
     Assert-True (Test-Path -LiteralPath $trashDupFolder) "Folder _Duplicates inside `$RECYCLE.BIN was untouched"
+    Assert-True (Test-Path -LiteralPath $dotDupFolder) "Folder _Duplicates inside .thumbnails was untouched"
 
     # Test 11d: All scripts refuse to run if Path is a Recycle Bin or inside it
     $refusedSorter = $false

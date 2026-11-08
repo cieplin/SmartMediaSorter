@@ -527,7 +527,7 @@ $dirStack.Push([System.IO.DirectoryInfo]::new($resolvedSource))
 
 while ($dirStack.Count -gt 0) {
     $currDir = $dirStack.Pop()
-    if (Test-IsRecycleBinOrTrashDirectoryName -DirectoryName $currDir.Name) {
+    if (Test-IsIgnoredDirectoryName -DirectoryName $currDir.Name) {
         continue
     }
 
@@ -552,7 +552,7 @@ while ($dirStack.Count -gt 0) {
             $subDirs = $currDir.GetDirectories()
             for ($idx = $subDirs.Length - 1; $idx -ge 0; $idx--) {
                 $sub = $subDirs[$idx]
-                if (Test-IsRecycleBinOrTrashDirectoryName -DirectoryName $sub.Name) {
+                if (Test-IsIgnoredDirectoryName -DirectoryName $sub.Name) {
                     continue
                 }
                 if ([bool]($sub.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {

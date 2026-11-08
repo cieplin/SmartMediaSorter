@@ -186,8 +186,8 @@ function Find-DuplicateFolders {
                 continue
             }
 
-            if (Test-IsRecycleBinOrTrashDirectoryName -DirectoryName $child.Name) {
-                Write-SorterLog -Message "Skipping recycle bin/trash directory '$($child.FullName)'" -Level "INFO" -LogFile $LogFile
+            if (Test-IsIgnoredDirectoryName -DirectoryName $child.Name) {
+                Write-SorterLog -Message "Skipping ignored directory '$($child.FullName)'" -Level "INFO" -LogFile $LogFile
                 continue
             }
 
@@ -380,8 +380,8 @@ foreach ($child in $rootChildren) {
         continue
     }
 
-    if (Test-IsRecycleBinOrTrashDirectoryName -DirectoryName $child.Name) {
-        Write-SorterLog -Message "Skipping recycle bin/trash directory '$($child.FullName)'" -Level "INFO" -LogFile $LogPath
+    if (Test-IsIgnoredDirectoryName -DirectoryName $child.Name) {
+        Write-SorterLog -Message "Skipping ignored directory '$($child.FullName)'" -Level "INFO" -LogFile $LogPath
         continue
     }
 
@@ -449,7 +449,7 @@ if ($ThrottleLimit -gt 1 -and $topLevelSubDirs.Count -gt 1) {
                     }
                 }
                 if ($isExcl) { continue }
-                if (Test-IsRecycleBinOrTrashDirectoryName -DirectoryName $ch.Name) { continue }
+                if (Test-IsIgnoredDirectoryName -DirectoryName $ch.Name) { continue }
 
                 $isReparse = [bool]($ch.Attributes -band [System.IO.FileAttributes]::ReparsePoint)
                 if ($ch.Name.Equals($folderName, [System.StringComparison]::OrdinalIgnoreCase)) {
