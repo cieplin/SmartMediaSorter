@@ -2,7 +2,7 @@
 
 A PowerShell toolkit for automated photo sorting, renaming based on **EXIF** capture date (`SmartMediaSorter.ps1`), and media duplicate detection & isolation (`Find-MediaDuplicates.ps1`), backed by a shared hashing module and persistent JSON database (`SmartMediaCommon.ps1` / `.smartmediasorter_db.json`).
 
-> Polska wersja dokumentacji: [README_PL.md](README_PL.md) (lub [REDME_PL.md](REDME_PL.md)).
+> Polska wersja dokumentacji: [README_PL.md](README_PL.md).
 
 ---
 
