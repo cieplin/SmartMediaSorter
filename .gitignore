@@ -1,4 +1,12 @@
+# Pliki logów i tymczasowe
 *.log
+
+# Bazy danych i sesje testowe
+.smartmediasorter_db.json
+
+# Ignoruj wszystkie pliki .md z wyjątkiem dokumentacji i specyfikacji projektu
 *.md
 !README.md
 !README_PL.md
+!GEMINI.md
+!MEMORY.md
